@@ -2,8 +2,11 @@
 * https://github.com/amazingSurge/jquery-asProgress
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
 (function($, document, window, undefined) {
-    // Optional, but considered best practice by some
     "use strict";
+
+    function isPercentage(n) {
+        return typeof n === 'string' && n.indexOf('%') != -1;
+    }
 
     var pluginName = 'asProgress';
 
@@ -12,43 +15,51 @@
         this.$element = $(element);
 
         this.options = $.extend({}, Plugin.defaults, options, this.$element.data());
-
-        this._plugin = pluginName;
         this.namespace = this.options.namespace;
 
         this.classes = {
-            disabled: this.namespace + '_disabled',
-            wrapper: this.namespace + '-wrapper'
+            label: this.namespace + '__label',
+            meter: this.namespace + '__meter'
         };
-
         this.$element.addClass(this.namespace);
 
-        this.disabled = false;
-        this.initialized = false;
+        this.min = parseInt(this.$element.attr('aria-valuemin'), 10) || this.options.min;
+        this.max = parseInt(this.$element.attr('aria-valuemax'), 10) || this.options.max;
+        this.first = parseInt(this.$element.attr('aria-valuenow'), 10) || this.min;
 
+        this.now = this.first;
+        this.goal = this.options.goal;
+        this._interval = null;
+
+        this.initialized = false;
         this._trigger('init');
         this.init();
     };
 
     Plugin.defaults = {
         namespace: 'asProgress',
-        checked: true,
-        animation: 200
+        min: 0,
+        max: 100,
+        goal: 100,
+        step: 1,
+        speed: 50, // refresh speed
+        delay: 300,
+        label: function(n) {
+            var percentage = this.getPercentage(n);
+            return percentage;
+        }
     };
 
     Plugin.prototype = {
         constructor: Plugin,
         init: function() {
-            this._createHtml();
-            this._bindEvent();
+            this.$meter = this.$element.find('.' + this.classes.meter);
+            this.$label = this.$element.find('.' + this.classes.label);
 
-
+            this.reset();
             this.initialized = true;
             this._trigger('ready');
         },
-        _bindEvent: function() {},
-        _createHtml: function() {},
-
         _trigger: function(eventType) {
             var method_arguments = arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : undefined,
                 data;
@@ -71,33 +82,103 @@
                 this.options[onFunction].apply(this, method_arguments);
             }
         },
-
-        /* Public functions */
-        update: function(data) {
-            // reload comfig
-            // render again
-            this._trigger('update');
+        getPercentage: function(n) {
+            return Math.round(100 * (n - this.min) / (this.max - this.min)) + '%';
         },
+        go: function(goal) {
+            var self = this;
+            this._clear();
 
-        enable: function() {
-            this.disabled = false;
+            if (isPercentage(goal)) {
+                goal = parseInt(goal.replace('%', ''), 10);
+                goal = Math.round((goal / 100) * (this.max - this.min));
+            }
 
-            // which element is up to your requirement
-            this.$element.removeClass(this.classes.disabled);
+            if (typeof goal === 'undefined') {
+                goal = this.goal;
+            }
 
-            // here maybe have some events detached
+            if (goal > this.max) {
+                goal = this.max;
+            } else if (goal < this.min) {
+                goal = this.min;
+            }
+
+
+            setTimeout(function() {
+                self._interval = setInterval(function() {
+                    var distance = goal - self.now,
+                        next;
+                    if (distance > 0) {
+                        if (distance < self.options.step) {
+                            next = goal;
+                        } else {
+                            next = self.now + self.options.step;
+                        }
+                    } else if (distance < 0) {
+                        if (-distance < self.options.step) {
+                            next = goal;
+                        } else {
+                            next = self.now - self.options.step;
+                        }
+                    } else {
+                        next = goal;
+                    }
+
+                    self._update(next);
+
+                    if (self.now === goal) {
+                        clearInterval(self._interval);
+                        self._interval = null;
+
+                        if (self.now === self.goal) {
+                            self._trigger('done');
+                        }
+                    }
+                }, self.options.speed);
+            }, self.options.delay);
         },
-        disable: function() {
-            this.disabled = true;
-            // which element is up to your requirement
-            // .disabled { pointer-events: none; } NO SUPPORT IE11 BELOW
-            this.$element.addClass(this.classes.disabled);
+        _update: function(n) {
+            this.now = n;
 
-            // here maybe have some events attached
+            var percenage = this.getPercentage(this.now);
+            this.$meter.css('width', percenage);
+            this.$element.attr('aria-valuenow', this.now);
+            if (typeof this.options.label === 'function') {
+                this.$label.html(this.options.label.call(this, [this.now]));
+            }
+
+            this._trigger('update', n);
+        },
+        get: function() {
+            return this.now;
+        },
+        start: function() {
+            this._clear();
+            this._trigger('start');
+            this.go(this.goal);
+        },
+        _clear: function() {
+            if (this._interval) {
+                clearInterval(this._interval);
+                this._interval = null;
+            }
+        },
+        reset: function() {
+            this._clear();
+            this._update(this.first);
+            this._trigger('reset');
+        },
+        stop: function() {
+            this._clear();
+            this._trigger('stop');
+        },
+        done: function() {
+            this._clear();
+            this._update(this.goal);
+            this._trigger('done');
         },
         destory: function() {
-            // detached events first
-            // then remove all js generated html
             this.$element.data(pluginName, null);
             this._trigger('destory');
         }
@@ -110,7 +191,7 @@
 
             if (/^\_/.test(method)) {
                 return false;
-            } else if ((/^(get)$/.test(method)) || (method === 'val' && method_arguments === undefined)) {
+            } else if ((/^(get)$/.test(method))) {
                 var api = this.first().data(pluginName);
                 if (api && typeof api[method] === 'function') {
                     return api[method].apply(api, method_arguments);

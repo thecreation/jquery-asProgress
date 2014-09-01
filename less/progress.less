@@ -18,6 +18,9 @@
 @progress--alert-meter-size   : #f04124;
 @progress--striped-meter-size : 40px 40px;
 
+@progress-label-fontSize      : 12px;
+@progress-label-color         : #fff;
+
 // ==========================================================================
 // Progress
 // ==========================================================================
@@ -33,8 +36,16 @@
 		display: block;
 		height: 100%;
 		background: @progress-meter-bgColor;
+
+		transition: width 0.6s ease;
 	}
 
+	&__label {
+		float: right;
+		padding: 0 2px;
+		color: @progress-label-color;
+		font-size: @progress-label-fontSize;
+	}
 	// type
 	// ======================================================================
 	&--radius {
