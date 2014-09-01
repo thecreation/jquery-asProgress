@@ -50,7 +50,7 @@
         delay: 300,
         label: function(n) {
             var percentage = this.getPercentage(n);
-            return percentage;
+            return percentage + '%';
         }
     };
 
@@ -87,7 +87,7 @@
             }
         },
         getPercentage: function(n) {
-            return Math.round(100 * (n - this.min) / (this.max - this.min)) + '%';
+            return Math.round(100 * (n - this.min) / (this.max - this.min));
         },
         go: function(goal) {
             var self = this;
@@ -146,7 +146,7 @@
             this.now = n;
 
             var percenage = this.getPercentage(this.now);
-            this.$meter.css('width', percenage);
+            this.$meter.css('width', percenage + '%');
             this.$element.attr('aria-valuenow', this.now);
             if (typeof this.options.label === 'function') {
                 this.$label.html(this.options.label.call(this, [this.now]));
