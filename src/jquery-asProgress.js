@@ -5,7 +5,6 @@
  * Copyright (c) 2014 amazingSurge
  * Licensed under the GPL license.
  */
-
 (function($, document, window, undefined) {
     "use strict";
 
@@ -58,8 +57,6 @@
             meter: this.namespace + '__meter'
         };
         this.$element.addClass(this.namespace);
-
-        this.min = parseInt(this.$element.attr('aria-valuemin'), 10) || this.options.min;
 
         this.min = this.$element.attr('aria-valuemin');
         this.max = this.$element.attr('aria-valuemax');
@@ -181,7 +178,6 @@
 
             self._frameId =  window.requestAnimationFrame(animation);
         },
-
         _update: function(n) {
             this.now = n;
 

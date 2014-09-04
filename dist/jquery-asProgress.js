@@ -54,8 +54,6 @@
         };
         this.$element.addClass(this.namespace);
 
-        this.min = parseInt(this.$element.attr('aria-valuemin'), 10) || this.options.min;
-
         this.min = this.$element.attr('aria-valuemin');
         this.max = this.$element.attr('aria-valuemax');
         this.min = this.min? parseInt(this.min, 10): this.options.min;
@@ -176,7 +174,6 @@
 
             self._frameId =  window.requestAnimationFrame(animation);
         },
-
         _update: function(n) {
             this.now = n;
 
