@@ -54,7 +54,7 @@
 
         this.classes = {
             label: this.namespace + '__label',
-            meter: this.namespace + '__meter'
+            bar: this.namespace + '__bar'
         };
         this.$element.addClass(this.namespace);
 
@@ -89,7 +89,7 @@
     Plugin.prototype = {
         constructor: Plugin,
         init: function() {
-            this.$meter = this.$element.find('.' + this.classes.meter);
+            this.$bar = this.$element.find('.' + this.classes.bar);
             this.$label = this.$element.find('.' + this.classes.label);
 
             this.reset();
@@ -176,7 +176,7 @@
             this.now = n;
 
             var percenage = this.getPercentage(this.now);
-            this.$meter.css('width', percenage + '%');
+            this.$bar.css('width', percenage + '%');
             this.$element.attr('aria-valuenow', this.now);
             if (this.$label.length > 0 && typeof this.options.labelCallback === 'function') {
                 this.$label.html(this.options.labelCallback.call(this, [this.now]));
@@ -221,7 +221,7 @@
     $.fn[pluginName] = function(options) {
         if (typeof options === 'string') {
             var method = options;
-            var method_arguments = arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : undefined;
+            var method_arguments = arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : [];
 
             if (/^\_/.test(method)) {
                 return false;
