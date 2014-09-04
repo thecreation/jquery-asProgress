@@ -76,7 +76,7 @@
         max: 100,
         goal: 100,
         speed: 20, // speed of 1/100
-        label: function(n) {
+        labelCallback: function(n) {
             var percentage = this.getPercentage(n);
             return percentage + '%';
         }
@@ -135,19 +135,13 @@
                 goal = this.min;
             }
 
-            var inc, start = self.now;
-            if(goal > start) {
-                inc = true;
-            } else {
-                inc = false;
-            }
-
+            var start = self.now;
             var startTime = getTime();
             var animation = function(time){
                 var distance = (time - startTime)/self.options.speed;
                 var next = Math.round(distance/100 * (self.max - self.min));
 
-                if(inc){
+                if(goal > start){
                     next = start + next;
                     if(next > goal){
                         next = goal;
@@ -180,8 +174,8 @@
             var percenage = this.getPercentage(this.now);
             this.$meter.css('width', percenage + '%');
             this.$element.attr('aria-valuenow', this.now);
-            if (typeof this.options.label === 'function') {
-                this.$label.html(this.options.label.call(this, [this.now]));
+            if (this.$label.length > 0 && typeof this.options.labelCallback === 'function') {
+                this.$label.html(this.options.labelCallback.call(this, [this.now]));
             }
 
             this._trigger('update', n);
