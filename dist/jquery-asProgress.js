@@ -1,11 +1,42 @@
-/*! jQuery asProgress - v0.1.0 - 2014-09-01
+/*! jQuery asProgress - v0.1.1 - 2014-09-03
 * https://github.com/amazingSurge/jquery-asProgress
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
 (function($, document, window, undefined) {
     "use strict";
 
+    if (!Date.now){
+        Date.now = function() { return new Date().getTime(); };
+    }
+
+    var vendors = ['webkit', 'moz'];
+    for (var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
+        var vp = vendors[i];
+        window.requestAnimationFrame = window[vp+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = (window[vp+'CancelAnimationFrame']
+                                   || window[vp+'CancelRequestAnimationFrame']);
+    }
+    if (/iP(ad|hone|od).*OS 6/.test(window.navigator.userAgent) // iOS6 is buggy
+        || !window.requestAnimationFrame || !window.cancelAnimationFrame) {
+        var lastTime = 0;
+        window.requestAnimationFrame = function(callback) {
+            var now = Date.now();
+            var nextTime = Math.max(lastTime + 16, now);
+            return setTimeout(function() { callback(lastTime = nextTime); },
+                              nextTime - now);
+        };
+        window.cancelAnimationFrame = clearTimeout;
+    }
+
     function isPercentage(n) {
         return typeof n === 'string' && n.indexOf('%') != -1;
+    }
+
+    function getTime(){
+        if (window.performance.now) {
+            return window.performance.now();
+        } else {
+            return Date.now();
+        }
     }
 
     var pluginName = 'asProgress';
@@ -24,12 +55,17 @@
         this.$element.addClass(this.namespace);
 
         this.min = parseInt(this.$element.attr('aria-valuemin'), 10) || this.options.min;
-        this.max = parseInt(this.$element.attr('aria-valuemax'), 10) || this.options.max;
-        this.first = parseInt(this.$element.attr('aria-valuenow'), 10) || this.min;
+
+        this.min = this.$element.attr('aria-valuemin');
+        this.max = this.$element.attr('aria-valuemax');
+        this.min = this.min? parseInt(this.min, 10): this.options.min;
+        this.max = this.max? parseInt(this.max, 10): this.options.max;
+        this.first = this.$element.attr('aria-valuenow');
+        this.first = this.first? parseInt(this.first, 10): this.min;
 
         this.now = this.first;
         this.goal = this.options.goal;
-        this._interval = null;
+        this._frameId = null;
 
         this.initialized = false;
         this._trigger('init');
@@ -41,8 +77,7 @@
         min: 0,
         max: 100,
         goal: 100,
-        step: 1,
-        speed: 50, // refresh speed
+        speed: 20, // speed of 1/100
         delay: 300,
         label: function(n) {
             var percentage = this.getPercentage(n);
@@ -91,9 +126,8 @@
 
             if (isPercentage(goal)) {
                 goal = parseInt(goal.replace('%', ''), 10);
-                goal = Math.round((goal / 100) * (this.max - this.min));
+                goal = Math.round(this.min + (goal / 100) * (this.max - this.min));
             }
-
             if (typeof goal === 'undefined') {
                 goal = this.goal;
             }
@@ -104,40 +138,42 @@
                 goal = this.min;
             }
 
+            var inc;
+            if(goal > self.now) {
+                inc = true;
+            } else {
+                inc = false;
+            }
 
             setTimeout(function() {
-                self._interval = setInterval(function() {
-                    var distance = goal - self.now,
-                        next;
-                    if (distance > 0) {
-                        if (distance < self.options.step) {
-                            next = goal;
-                        } else {
-                            next = self.now + self.options.step;
-                        }
-                    } else if (distance < 0) {
-                        if (-distance < self.options.step) {
-                            next = goal;
-                        } else {
-                            next = self.now - self.options.step;
-                        }
-                    } else {
+                var startTime = getTime();
+                var animation = function(time){
+                    var distance = (time - startTime)/self.options.speed;
+                    var next = Math.round(self.min + distance/100 * (self.max - self.min));
+
+                    if(inc && next > goal){
+                        next = goal;
+                    } else if(!inc && next < goal){
                         next = goal;
                     }
 
                     self._update(next);
-
-                    if (self.now === goal) {
-                        clearInterval(self._interval);
-                        self._interval = null;
+                    if (next === goal) {
+                        window.cancelAnimationFrame(self._frameId);
+                        self._frameId = null;
 
                         if (self.now === self.goal) {
-                            self._trigger('done');
+                            self._trigger('finish');
                         }
+                    } else {
+                        self._frameId =  window.requestAnimationFrame(animation);
                     }
-                }, self.options.speed);
+                };
+
+                self._frameId =  window.requestAnimationFrame(animation);
             }, self.options.delay);
         },
+
         _update: function(n) {
             this.now = n;
 
@@ -159,9 +195,9 @@
             this.go(this.goal);
         },
         _clear: function() {
-            if (this._interval) {
-                clearInterval(this._interval);
-                this._interval = null;
+            if (this._frameId) {
+                window.cancelAnimationFrame(this._frameId);
+                this._frameId = null;
             }
         },
         reset: function() {
@@ -173,10 +209,10 @@
             this._clear();
             this._trigger('stop');
         },
-        done: function() {
+        finish: function() {
             this._clear();
             this._update(this.goal);
-            this._trigger('done');
+            this._trigger('finish');
         },
         destory: function() {
             this.$element.data(pluginName, null);

@@ -32,16 +32,16 @@
                     <div class="progress" role="progressbar" data-goal="30">
                         <div class="progress__meter" style="width: 30%"></div>
                     </div>
-                    <div class="progress" role="progressbar" data-goal="180" aria-valuemin="20" data-step="7" aria-valuemax="200">
+                    <div class="progress" role="progressbar" data-goal="-50" aria-valuemin="-100" aria-valuemax="0">
                         <div class="progress__meter"><span class="progress__label"></span></div>
                     </div>
-                    <div class="progress" role="progressbar" data-goal="50" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress" role="progressbar" data-goal="60" aria-valuemin="0" aria-valuemax="100">
                         <div class="progress__meter" style="width: 50%"></div>
                     </div>
                 </div>
                 <div>
                     <button id="button_start">start()</button>
-                    <button id="button_done">done()</button>
+                    <button id="button_finish">finish()</button>
                     <button id="button_go">go('50')</button>
                     <button id="button_go_percentage">go('50%')</button>
                     <button id="button_stop">stop()</button>
@@ -63,8 +63,8 @@
         $('#button_start').on('click', function(){
             $('.progress').asProgress('start');
         });
-        $('#button_done').on('click', function(){
-             $('.progress').asProgress('done');
+        $('#button_finish').on('click', function(){
+             $('.progress').asProgress('finish');
         });
         $('#button_go').on('click', function(){
              $('.progress').asProgress('go',50);

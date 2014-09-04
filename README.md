@@ -52,7 +52,7 @@ jquery asProgress has different methods , we can use it as below :
 ```javascript
 $(".progress").asProgress("start");
 $(".progress").asProgress("stop");
-$(".progress").asProgress("done");
+$(".progress").asProgress("finish");
 $(".progress").asProgress("go", 50);
 $(".progress").asProgress("go", '50%');
 $(".progress").asProgress("reset");
@@ -61,7 +61,7 @@ $(".progress").asProgress("reset");
 
 * <code>asProgress::start</code>
 * <code>asProgress::stop</code>
-* <code>asProgress::done</code>
+* <code>asProgress::finish</code>
 * <code>asProgress::update</code>
 * <code>asProgress::reset</code>
 
