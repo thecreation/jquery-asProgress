@@ -1,4 +1,4 @@
-/*! jQuery asProgress - v0.1.1 - 2014-09-03
+/*! jQuery asProgress - v0.1.1 - 2014-09-04
 * https://github.com/amazingSurge/jquery-asProgress
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
 (function($, document, window, undefined) {
@@ -78,7 +78,6 @@
         max: 100,
         goal: 100,
         speed: 20, // speed of 1/100
-        delay: 300,
         label: function(n) {
             var percentage = this.getPercentage(n);
             return percentage + '%';
@@ -138,40 +137,44 @@
                 goal = this.min;
             }
 
-            var inc;
-            if(goal > self.now) {
+            var inc, start = self.now;
+            if(goal > start) {
                 inc = true;
             } else {
                 inc = false;
             }
 
-            setTimeout(function() {
-                var startTime = getTime();
-                var animation = function(time){
-                    var distance = (time - startTime)/self.options.speed;
-                    var next = Math.round(self.min + distance/100 * (self.max - self.min));
+            var startTime = getTime();
+            var animation = function(time){
+                var distance = (time - startTime)/self.options.speed;
+                var next = Math.round(distance/100 * (self.max - self.min));
 
-                    if(inc && next > goal){
-                        next = goal;
-                    } else if(!inc && next < goal){
+                if(inc){
+                    next = start + next;
+                    if(next > goal){
                         next = goal;
                     }
-
-                    self._update(next);
-                    if (next === goal) {
-                        window.cancelAnimationFrame(self._frameId);
-                        self._frameId = null;
-
-                        if (self.now === self.goal) {
-                            self._trigger('finish');
-                        }
-                    } else {
-                        self._frameId =  window.requestAnimationFrame(animation);
+                } else{
+                    next = start - next;
+                    if(next < goal){
+                        next = goal;
                     }
-                };
+                }
 
-                self._frameId =  window.requestAnimationFrame(animation);
-            }, self.options.delay);
+                self._update(next);
+                if (next === goal) {
+                    window.cancelAnimationFrame(self._frameId);
+                    self._frameId = null;
+
+                    if (self.now === self.goal) {
+                        self._trigger('finish');
+                    }
+                } else {
+                    self._frameId =  window.requestAnimationFrame(animation);
+                }
+            };
+
+            self._frameId =  window.requestAnimationFrame(animation);
         },
 
         _update: function(n) {
