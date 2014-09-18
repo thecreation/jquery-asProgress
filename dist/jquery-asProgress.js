@@ -1,4 +1,4 @@
-/*! jQuery asProgress - v0.1.1 - 2014-09-06
+/*! jQuery asProgress - v0.1.1 - 2014-09-18
 * https://github.com/amazingSurge/jquery-asProgress
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
 (function($, document, window, undefined) {
@@ -15,14 +15,16 @@
         window.cancelAnimationFrame = (window[vp+'CancelAnimationFrame']
                                    || window[vp+'CancelRequestAnimationFrame']);
     }
-    if (/iP(ad|hone|od).*OS 6/.test(window.navigator.userAgent) // iOS6 is buggy
+    if (/iP(ad|hone|od).*OS (6|7)/.test(window.navigator.userAgent) // iOS6 is buggy
         || !window.requestAnimationFrame || !window.cancelAnimationFrame) {
         var lastTime = 0;
         window.requestAnimationFrame = function(callback) {
             var now = Date.now();
             var nextTime = Math.max(lastTime + 16, now);
-            return setTimeout(function() { callback(lastTime = nextTime); },
-                              nextTime - now);
+            return setTimeout(function() {
+                    callback(lastTime = nextTime);
+                },
+                nextTime - now);
         };
         window.cancelAnimationFrame = clearTimeout;
     }
@@ -32,7 +34,7 @@
     }
 
     function getTime(){
-        if (window.performance.now) {
+        if (typeof window.performance !== 'undefined' && window.performance.now) {
             return window.performance.now();
         } else {
             return Date.now();
