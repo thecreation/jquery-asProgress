@@ -76,6 +76,8 @@
             this.$element.addClass(this.namespace);
         }
         
+        this.min = this.$target.attr('aria-valuemin');
+        this.max = this.$target.attr('aria-valuemax');
         this.min = this.min? parseInt(this.min, 10): this.options.min;
         this.max = this.max? parseInt(this.max, 10): this.options.max;
         this.first = this.$target.attr('aria-valuenow');

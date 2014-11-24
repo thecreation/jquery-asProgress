@@ -1,4 +1,4 @@
-/*! jQuery asProgress - v0.1.1 - 2014-09-18
+/*! jQuery asProgress - v0.1.1 - 2014-11-24
 * https://github.com/amazingSurge/jquery-asProgress
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
 (function($, document, window, undefined) {
@@ -47,20 +47,36 @@
         this.element = element;
         this.$element = $(element);
 
+
         this.options = $.extend({}, Plugin.defaults, options, this.$element.data());
-        this.namespace = this.options.namespace;
 
-        this.classes = {
-            label: this.namespace + '__label',
-            bar: this.namespace + '__bar'
-        };
-        this.$element.addClass(this.namespace);
+        if(this.options.bootstrap){
+            this.namespace = 'progress';
 
-        this.min = this.$element.attr('aria-valuemin');
-        this.max = this.$element.attr('aria-valuemax');
+            this.$target = this.$element.find('.progress-bar');
+
+            this.classes = {
+                label: this.namespace + '-label',
+                bar: this.namespace + '-bar'
+            };
+        } else {
+            this.namespace = this.options.namespace;
+
+            this.classes = {
+                label: this.namespace + '__label',
+                bar: this.namespace + '__bar'
+            };
+
+            this.$target = this.$element;
+
+            this.$element.addClass(this.namespace);
+        }
+        
+        this.min = this.$target.attr('aria-valuemin');
+        this.max = this.$target.attr('aria-valuemax');
         this.min = this.min? parseInt(this.min, 10): this.options.min;
         this.max = this.max? parseInt(this.max, 10): this.options.max;
-        this.first = this.$element.attr('aria-valuenow');
+        this.first = this.$target.attr('aria-valuenow');
         this.first = this.first? parseInt(this.first, 10): this.min;
 
         this.now = this.first;
@@ -74,6 +90,7 @@
 
     Plugin.defaults = {
         namespace: 'asProgress',
+        bootstrap: false,
         min: 0,
         max: 100,
         goal: 100,
@@ -169,7 +186,7 @@
 
             var percenage = this.getPercentage(this.now);
             this.$bar.css('width', percenage + '%');
-            this.$element.attr('aria-valuenow', this.now);
+            this.$target.attr('aria-valuenow', this.now);
             if (this.$label.length > 0 && typeof this.options.labelCallback === 'function') {
                 this.$label.html(this.options.labelCallback.call(this, [this.now]));
             }
