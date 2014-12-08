@@ -1,4 +1,4 @@
-/*! jQuery asProgress - v0.1.1 - 2014-11-24
+/*! jQuery asProgress - v0.1.1 - 2014-12-09
 * https://github.com/amazingSurge/jquery-asProgress
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
 (function($, document, window, undefined) {
@@ -71,6 +71,8 @@
 
             this.$element.addClass(this.namespace);
         }
+
+        this.easing = Plugin.easing[this.options.easing] || Plugin.easing["ease"];
         
         this.min = this.$target.attr('aria-valuemin');
         this.max = this.$target.attr('aria-valuemax');
@@ -95,11 +97,64 @@
         max: 100,
         goal: 100,
         speed: 20, // speed of 1/100
+        easing: 'ease',
         labelCallback: function(n) {
             var percentage = this.getPercentage(n);
             return percentage + '%';
         }
     };
+
+    var easingBezier = function (mX1, mY1, mX2, mY2) {    
+        function A(aA1, aA2) { return 1.0 - 3.0 * aA2 + 3.0 * aA1; }
+        function B(aA1, aA2) { return 3.0 * aA2 - 6.0 * aA1; }
+        function C(aA1)      { return 3.0 * aA1; }
+       
+        // Returns x(t) given t, x1, and x2, or y(t) given t, y1, and y2.
+        function CalcBezier(aT, aA1, aA2) {
+          return ((A(aA1, aA2)*aT + B(aA1, aA2))*aT + C(aA1))*aT;
+        }
+       
+        // Returns dx/dt given t, x1, and x2, or dy/dt given t, y1, and y2.
+        function GetSlope(aT, aA1, aA2) {
+          return 3.0 * A(aA1, aA2)*aT*aT + 2.0 * B(aA1, aA2) * aT + C(aA1);
+        }
+       
+        function GetTForX(aX) {
+          // Newton raphson iteration
+          var aGuessT = aX;
+          for (var i = 0; i < 4; ++i) {
+            var currentSlope = GetSlope(aGuessT, mX1, mX2);
+            if (currentSlope === 0.0) return aGuessT;
+            var currentX = CalcBezier(aGuessT, mX1, mX2) - aX;
+            aGuessT -= currentX / currentSlope;
+          }
+          return aGuessT;
+        }
+
+        if (mX1 === mY1 && mX2 === mY2) {
+            return {
+                css: 'linear',
+                fn: function(aX){
+                    return aX;
+                }
+            };
+        } else {
+            return {
+                css: 'cubic-bezier('+mX1+','+mY1+','+mX2+','+mY2+')',
+                fn: function (aX) {
+                    return CalcBezier(GetTForX(aX), mY1, mY2);
+                }
+            }
+        }
+    };
+
+    $.extend(Plugin.easing = {}, {
+        "ease":        easingBezier(0.25, 0.1, 0.25, 1.0), 
+        "linear":      easingBezier(0.00, 0.0, 1.00, 1.0),
+        "ease-in":     easingBezier(0.42, 0.0, 1.00, 1.0),
+        "ease-out":    easingBezier(0.00, 0.0, 0.58, 1.0),
+        "ease-in-out": easingBezier(0.42, 0.0, 0.58, 1.0)
+    });
 
     Plugin.prototype = {
         constructor: Plugin,
@@ -152,7 +207,7 @@
             var startTime = getTime();
             var animation = function(time){
                 var distance = (time - startTime)/self.options.speed;
-                var next = Math.round(distance/100 * (self.max - self.min));
+                var next = Math.round(self.easing.fn(distance/100) * (self.max - self.min));
 
                 if(goal > start){
                     next = start + next;

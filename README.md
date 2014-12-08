@@ -35,6 +35,7 @@ $(".progress").asProgress({
     step: 1,
     speed: 50, // refresh speed
     delay: 300,
+    easing: 'ease',
     label: function(n) {
         var percentage = this.getPercentage(n);
         return percentage;
