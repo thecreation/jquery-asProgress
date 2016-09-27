@@ -1,0 +1,94 @@
+// ==========================================================================
+// Variables
+// ==========================================================================
+$progress-margin-bottom       : 20px;
+$progress-padding             : 1px;
+$progress-bgColor             : #f7f7f7;
+$progress-borderColor         : #eeeeee;
+$progress-bar-bgColor         : #5bc0de;
+
+$progress-radius              : 2px;
+$progress-round               : 1000px;
+
+$progress-height              : 20px;
+$progress-small-height        : 15px;
+$progress-large-height        : 10px;
+
+$progress--success-bar-size   : #43ac6a;
+$progress--alert-bar-size     : #f04124;
+$progress--striped-bar-size   : 40px 40px;
+
+$progress-label-fontSize      : 12px;
+$progress-label-color         : #fff;
+
+// ==========================================================================
+// Progress
+// ==========================================================================
+.progress {
+	height: $progress-height;
+	padding: $progress-padding;
+	background-color: $progress-bgColor;
+	border: 1px solid $progress-borderColor;
+	overflow: hidden;
+	margin-bottom: $progress-margin-bottom;
+
+	&__bar {
+		display: block;
+		height: 100%;
+		background: $progress-bar-bgColor;
+	}
+
+	&__label {
+		float: right;
+		padding: 0 2px;
+		color: $progress-label-color;
+		font-size: $progress-label-fontSize;
+	}
+
+	// type
+	// ======================================================================
+	&--radius {
+		border-radius :$progress-radius;
+	}
+	&--round {
+		border-radius: $progress-round;
+	}
+	&--radius,
+	&--round {
+		.progress__bar {
+			border-radius: inherit;
+		}
+	}
+
+	// size
+	// ======================================================================
+	&--small {
+		height: $progress-small-height;
+	}
+	&--large {
+		height: $progress-large-height;
+	}
+
+	// success
+	// ======================================================================
+	&--success {
+		.progress__bar {
+			background-color: $progress--success-bar-size;
+		}
+	}
+
+	// alert
+	// ======================================================================
+	&--alert {
+		.progress__bar {
+			background-color: $progress--alert-bar-size;
+		}
+	}
+	// striped
+	// ======================================================================
+	&--striped {
+		.progress__bar {
+			background-size: $progress--striped-bar-size;
+		}
+	}
+}
