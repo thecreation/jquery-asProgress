@@ -99,7 +99,7 @@ There are some example usages that you can look at to get started. They can be f
 
 ```
 {
-  namespace: 'asProgress',
+  namespace: 'progress',
   bootstrap: false,
   min: 0,
   max: 100,
@@ -109,7 +109,9 @@ There are some example usages that you can look at to get started. They can be f
   labelCallback(n) {
     const percentage = this.getPercentage(n);
     return `${percentage}%`;
-  }
+  },
+  
+  // callbacks
   onStart: function(){},
   onStop: function(){},
   onUpdate: function(){},

@@ -1,5 +1,5 @@
 export default {
-  namespace: 'asProgress',
+  namespace: 'progress',
   bootstrap: false,
   min: 0,
   max: 100,

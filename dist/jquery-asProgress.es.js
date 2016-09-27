@@ -1,5 +1,5 @@
 /**
-* jQuery asProgress v0.2.0
+* jQuery asProgress v0.2.1
 * https://github.com/amazingSurge/jquery-asProgress
 *
 * Copyright (c) amazingSurge
@@ -8,7 +8,7 @@
 import $ from 'jquery';
 
 var DEFAULTS = {
-  namespace: 'asProgress',
+  namespace: 'progress',
   bootstrap: false,
   min: 0,
   max: 100,
@@ -354,7 +354,7 @@ class asProgress {
 }
 
 var info = {
-  version:'0.2.0'
+  version:'0.2.1'
 };
 
 const NAMESPACE = 'asProgress';
