@@ -1,5 +1,5 @@
 /**
-* jQuery asProgress v0.2.1
+* jQuery asProgress v0.2.2
 * https://github.com/amazingSurge/jquery-asProgress
 *
 * Copyright (c) amazingSurge
@@ -280,7 +280,7 @@ class asProgress {
       this.$label.html(this.options.labelCallback.call(this, [this.now]));
     }
 
-    this._trigger('update', n);
+    this._trigger('update', [n]);
   }
 
   _clear() {
@@ -354,7 +354,7 @@ class asProgress {
 }
 
 var info = {
-  version:'0.2.1'
+  version:'0.2.2'
 };
 
 const NAMESPACE = 'asProgress';

@@ -162,7 +162,7 @@ class asProgress {
       this.$label.html(this.options.labelCallback.call(this, [this.now]));
     }
 
-    this._trigger('update', n);
+    this._trigger('update', [n]);
   }
 
   _clear() {

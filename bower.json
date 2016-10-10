@@ -1,6 +1,6 @@
 {
   "name": "jquery-asProgress",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A jQuery plugin that animate the progress bar.",
   "main": "dist/jquery-asProgress.js",
   "copyright": "amazingSurge",
