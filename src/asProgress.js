@@ -71,7 +71,7 @@ class asProgress {
   }
 
   _trigger(eventType, ...params) {
-    let data = [this].concat(...params);
+    let data = [this].concat(params);
 
     // event
     this.$element.trigger(`${NAMESPACE}::${eventType}`, data);
@@ -83,7 +83,7 @@ class asProgress {
     let onFunction = `on${eventType}`;
 
     if (typeof this.options[onFunction] === 'function') {
-      this.options[onFunction].apply(this, ...params);
+      this.options[onFunction].apply(this, params);
     }
   }
 
@@ -162,7 +162,7 @@ class asProgress {
       this.$label.html(this.options.labelCallback.call(this, [this.now]));
     }
 
-    this._trigger('update', [n]);
+    this._trigger('update', n);
   }
 
   _clear() {
@@ -205,9 +205,9 @@ class asProgress {
     }
   }
 
-  destory() {
+  destroy() {
     this.$element.data(NAMESPACE, null);
-    this._trigger('destory');
+    this._trigger('destroy');
   }
 
   enable() {
