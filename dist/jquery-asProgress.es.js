@@ -1,5 +1,5 @@
 /**
-* jQuery asProgress v0.2.3
+* jQuery asProgress v0.2.4
 * https://github.com/amazingSurge/jquery-asProgress
 *
 * Copyright (c) amazingSurge
@@ -354,7 +354,7 @@ class asProgress {
 }
 
 var info = {
-  version:'0.2.3'
+  version:'0.2.4'
 };
 
 const NAMESPACE = 'asProgress';
