@@ -1,25 +1,25 @@
 // ==========================================================================
 // Variables
 // ==========================================================================
-$progress-margin-bottom       : 20px;
-$progress-padding             : 1px;
-$progress-bgColor             : #f7f7f7;
-$progress-borderColor         : #eeeeee;
-$progress-bar-bgColor         : #5bc0de;
+$progress-margin-bottom       : 20px !default;
+$progress-padding             : 1px !default;
+$progress-bgColor             : #f7f7f7 !default;
+$progress-borderColor         : #eeeeee !default;
+$progress-bar-bgColor         : #5bc0de !default;
 
-$progress-radius              : 2px;
-$progress-round               : 1000px;
+$progress-radius              : 2px !default;
+$progress-round               : 1000px !default;
 
-$progress-height              : 20px;
-$progress-small-height        : 15px;
-$progress-large-height        : 10px;
+$progress-height              : 20px !default;
+$progress-small-height        : 15px !default;
+$progress-large-height        : 10px !default;
 
-$progress--success-bar-size   : #43ac6a;
-$progress--alert-bar-size     : #f04124;
-$progress--striped-bar-size   : 40px 40px;
+$progress--success-bar-size   : #43ac6a !default;
+$progress--alert-bar-size     : #f04124 !default;
+$progress--striped-bar-size   : 40px 40px !default;
 
-$progress-label-fontSize      : 12px;
-$progress-label-color         : #fff;
+$progress-label-fontSize      : 12px !default;
+$progress-label-color         : #fff !default;
 
 // ==========================================================================
 // Progress
